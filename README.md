@@ -51,4 +51,4 @@ The Kanboard webhook url is displayed in **Settings > Integrations > Sendgrid**
 
 1. Be sure that your users have an email address in their profiles
 2. Assign a project identifier to the desired projects: **Project settings > Edit**
-3. Try to send an email to your project
+3. Try to send an email to your project: something+myproject@mydomain.tld

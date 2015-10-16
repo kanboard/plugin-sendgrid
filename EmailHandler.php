@@ -3,7 +3,11 @@
 namespace Kanboard\Plugin\Sendgrid;
 
 use Kanboard\Core\Base;
+use Kanboard\Core\Tool;
 use Kanboard\Core\Mail\ClientInterface;
+
+defined('SENDGRID_API_USER') or define('SENDGRID_API_USER', '');
+defined('SENDGRID_API_KEY') or define('SENDGRID_API_KEY', '');
 
 /**
  * Sendgrid Mail Handler

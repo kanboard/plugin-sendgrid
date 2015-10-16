@@ -5,9 +5,6 @@ namespace Kanboard\Plugin\Sendgrid;
 use Kanboard\Core\Translator;
 use Kanboard\Core\Plugin\Base;
 
-defined('SENDGRID_API_USER') or define('SENDGRID_API_USER', '');
-defined('SENDGRID_API_KEY') or define('SENDGRID_API_KEY', '');
-
 /**
  * Sendgrid Plugin
  *
