@@ -23,6 +23,6 @@ class Webhook extends Base
         $this->checkWebhookToken();
 
         $handler = new EmailHandler($this->container);
-        echo $handler->receiveEmail($this->request->getJson()) ? 'PARSED' : 'IGNORED';
+        echo $handler->receiveEmail($_POST) ? 'PARSED' : 'IGNORED';
     }
 }

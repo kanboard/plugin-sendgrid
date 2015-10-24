@@ -63,7 +63,7 @@ class EmailHandler extends Base implements ClientInterface
         $user = $this->user->getByEmail($envelope['from']);
 
         if (empty($user)) {
-            $this->container['logger']->debug('SendgridWebhook: ignored => user not found');
+            $this->logger->debug('SendgridWebhook: ignored => user not found');
             return false;
         }
 
@@ -71,13 +71,13 @@ class EmailHandler extends Base implements ClientInterface
         $project = $this->project->getByIdentifier(Tool::getMailboxHash($sender));
 
         if (empty($project)) {
-            $this->container['logger']->debug('SendgridWebhook: ignored => project not found');
+            $this->logger->debug('SendgridWebhook: ignored => project not found');
             return false;
         }
 
         // The user must be member of the project
         if (! $this->projectPermission->isMember($project['id'], $user['id'])) {
-            $this->container['logger']->debug('SendgridWebhook: ignored => user is not member of the project');
+            $this->logger->debug('SendgridWebhook: ignored => user is not member of the project');
             return false;
         }
 
