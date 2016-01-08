@@ -1,5 +1,5 @@
 {
-    "name": "kanboard/plugin-mailgun",
+    "name": "kanboard/plugin-sendgrid",
     "type": "project",
     "license": "MIT",
     "authors": [
