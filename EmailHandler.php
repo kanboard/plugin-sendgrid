@@ -2,9 +2,12 @@
 
 namespace Kanboard\Plugin\Sendgrid;
 
+require_once __DIR__.'/vendor/autoload.php';
+
 use Kanboard\Core\Base;
 use Kanboard\Core\Tool;
 use Kanboard\Core\Mail\ClientInterface;
+use League\HTMLToMarkdown\HtmlConverter;
 
 defined('SENDGRID_API_USER') or define('SENDGRID_API_USER', '');
 defined('SENDGRID_API_KEY') or define('SENDGRID_API_KEY', '');
@@ -83,7 +86,8 @@ class EmailHandler extends Base implements ClientInterface
 
         // Get the Markdown contents
         if (! empty($payload['html'])) {
-            $description = $this->htmlConverter->convert($payload['html']);
+            $htmlConverter = new HtmlConverter(array('strip_tags' => true));
+            $description = $htmlConverter->convert($payload['html']);
         }
         else if (! empty($payload['text'])) {
             $description = $payload['text'];

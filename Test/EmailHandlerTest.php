@@ -6,8 +6,9 @@ use Kanboard\Plugin\Sendgrid\EmailHandler;
 use Kanboard\Model\TaskCreation;
 use Kanboard\Model\TaskFinder;
 use Kanboard\Model\Project;
-use Kanboard\Model\ProjectPermission;
+use Kanboard\Model\ProjectUserRole;
 use Kanboard\Model\User;
+use Kanboard\Core\Security\Role;
 
 class SendgridTest extends Base
 {
@@ -43,7 +44,7 @@ class SendgridTest extends Base
     {
         $w = new EmailHandler($this->container);
         $p = new Project($this->container);
-        $pp = new ProjectPermission($this->container);
+        $pp = new ProjectUserRole($this->container);
         $u = new User($this->container);
         $tc = new TaskCreation($this->container);
         $tf = new TaskFinder($this->container);
@@ -74,7 +75,7 @@ class SendgridTest extends Base
             'subject' => 'Email task'
         )));
 
-        $this->assertTrue($pp->addMember(2, 2));
+        $this->assertTrue($pp->addUser(2, 2, Role::PROJECT_MEMBER));
 
         // The task must be created
         $this->assertTrue($w->receiveEmail(array(
