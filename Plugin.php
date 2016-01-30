@@ -18,7 +18,7 @@ class Plugin extends Base
         $this->emailClient->setTransport('sendgrid', '\Kanboard\Plugin\Sendgrid\EmailHandler');
         $this->template->hook->attach('template:config:integrations', 'sendgrid:integration');
 
-        $this->on('app.bootstrap', function($container) {
+        $this->on('app.bootstrap', function ($container) {
             Translator::load($container['config']->getCurrentLanguage(), __DIR__.'/Locale');
         });
     }
