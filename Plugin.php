@@ -17,10 +17,12 @@ class Plugin extends Base
     {
         $this->emailClient->setTransport('sendgrid', '\Kanboard\Plugin\Sendgrid\EmailHandler');
         $this->template->hook->attach('template:config:integrations', 'sendgrid:integration');
+        $this->route->addRoute('/sendgrid/handler/:token', 'webhook', 'receiver', 'sendgrid');
+    }
 
-        $this->on('app.bootstrap', function ($container) {
-            Translator::load($container['config']->getCurrentLanguage(), __DIR__.'/Locale');
-        });
+    public function onStartup()
+    {
+        Translator::load($this->language->getCurrentLanguage(), __DIR__.'/Locale');
     }
 
     public function getPluginDescription()
@@ -35,7 +37,7 @@ class Plugin extends Base
 
     public function getPluginVersion()
     {
-        return '1.0.2';
+        return '1.0.3';
     }
 
     public function getPluginHomepage()

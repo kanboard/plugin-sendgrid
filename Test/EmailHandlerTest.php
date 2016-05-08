@@ -14,30 +14,17 @@ class SendgridTest extends Base
 {
     public function testSendEmail()
     {
+        $this->container['httpClient']
+            ->expects($this->once())
+            ->method('postForm')
+            ->with(
+                'https://api.sendgrid.com/api/mail.send.json',
+                $this->anything(),
+                $this->anything()
+            );
+
         $pm = new EmailHandler($this->container);
         $pm->sendEmail('test@localhost', 'Me', 'Test', 'Content', 'Bob');
-
-        $this->assertEquals('https://api.sendgrid.com/api/mail.send.json', $this->container['httpClient']->getUrl());
-
-        $data = $this->container['httpClient']->getData();
-
-        $this->assertArrayHasKey('api_user', $data);
-        $this->assertArrayHasKey('api_key', $data);
-        $this->assertArrayHasKey('from', $data);
-        $this->assertArrayHasKey('fromname', $data);
-        $this->assertArrayHasKey('to', $data);
-        $this->assertArrayHasKey('toname', $data);
-        $this->assertArrayHasKey('subject', $data);
-        $this->assertArrayHasKey('html', $data);
-
-        $this->assertEquals('test@localhost', $data['to']);
-        $this->assertEquals('Me', $data['toname']);
-        $this->assertEquals('notifications@kanboard.local', $data['from']);
-        $this->assertEquals('Bob', $data['fromname']);
-        $this->assertEquals('Test', $data['subject']);
-        $this->assertEquals('Content', $data['html']);
-        $this->assertEquals('', $data['api_key']);
-        $this->assertEquals('', $data['api_user']);
     }
 
     public function testHandlePayload()
