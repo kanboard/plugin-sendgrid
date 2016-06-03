@@ -5,12 +5,8 @@ namespace Kanboard\Plugin\Sendgrid;
 require_once __DIR__.'/vendor/autoload.php';
 
 use Kanboard\Core\Base;
-use Kanboard\Core\Tool;
 use Kanboard\Core\Mail\ClientInterface;
 use League\HTMLToMarkdown\HtmlConverter;
-
-defined('SENDGRID_API_USER') or define('SENDGRID_API_USER', '');
-defined('SENDGRID_API_KEY') or define('SENDGRID_API_KEY', '');
 
 /**
  * Sendgrid Mail Handler
@@ -33,11 +29,11 @@ class EmailHandler extends Base implements ClientInterface
     public function sendEmail($email, $name, $subject, $html, $author)
     {
         $payload = array(
-            'api_user' => SENDGRID_API_USER,
-            'api_key' => SENDGRID_API_KEY,
+            'api_user' => $this->getApiUser(),
+            'api_key' => $this->getApiKey(),
             'to' => $email,
             'toname' => $name,
-            'from' => MAIL_FROM,
+            'from' => $this->helper->mail->getMailSenderAddress(),
             'fromname' => $author,
             'html' => $html,
             'subject' => $subject,
@@ -63,7 +59,7 @@ class EmailHandler extends Base implements ClientInterface
         $sender = isset($envelope['to'][0]) ? $envelope['to'][0] : '';
 
         // The user must exists in Kanboard
-        $user = $this->user->getByEmail($envelope['from']);
+        $user = $this->userModel->getByEmail($envelope['from']);
 
         if (empty($user)) {
             $this->logger->debug('SendgridWebhook: ignored => user not found');
@@ -71,7 +67,7 @@ class EmailHandler extends Base implements ClientInterface
         }
 
         // The project must have a short name
-        $project = $this->project->getByIdentifier(Tool::getMailboxHash($sender));
+        $project = $this->projectModel->getByIdentifier($this->helper->mail->getMailboxHash($sender));
 
         if (empty($project)) {
             $this->logger->debug('SendgridWebhook: ignored => project not found');
@@ -79,29 +75,68 @@ class EmailHandler extends Base implements ClientInterface
         }
 
         // The user must be member of the project
-        if (! $this->projectPermission->isMember($project['id'], $user['id'])) {
+        if (! $this->projectPermissionModel->isMember($project['id'], $user['id'])) {
             $this->logger->debug('SendgridWebhook: ignored => user is not member of the project');
             return false;
         }
 
-        // Get the Markdown contents
-        if (! empty($payload['html'])) {
-            $htmlConverter = new HtmlConverter(array('strip_tags' => true));
-            $description = $htmlConverter->convert($payload['html']);
-        }
-        else if (! empty($payload['text'])) {
-            $description = $payload['text'];
-        }
-        else {
-            $description = '';
-        }
-
         // Finally, we create the task
-        return (bool) $this->taskCreation->create(array(
+        return (bool) $this->taskCreationModel->create(array(
             'project_id' => $project['id'],
-            'title' => $payload['subject'],
-            'description' => $description,
+            'title' => $this->helper->mail->filterSubject($payload['subject']),
+            'description' => $this->getTaskDescription($payload),
             'creator_id' => $user['id'],
         ));
+    }
+
+    /**
+     * Get task description
+     *
+     * @access public
+     * @param  array $payload
+     * @return string
+     */
+    protected function getTaskDescription(array $payload)
+    {
+        $description = '';
+
+        if (!empty($payload['html'])) {
+            $htmlConverter = new HtmlConverter(array('strip_tags' => true));
+            $description = $htmlConverter->convert($payload['html']);
+        } elseif (!empty($payload['text'])) {
+            $description = $payload['text'];
+        }
+
+        return $description;
+    }
+
+    /**
+     * Get API token
+     *
+     * @access public
+     * @return string
+     */
+    public function getApiKey()
+    {
+        if (defined('SENDGRID_API_KEY')) {
+            return SENDGRID_API_KEY;
+        }
+
+        return $this->configModel->get('sendgrid_api_key');
+    }
+
+    /**
+     * Get API user
+     *
+     * @access public
+     * @return string
+     */
+    public function getApiUser()
+    {
+        if (defined('SENDGRID_API_USER')) {
+            return SENDGRID_API_USER;
+        }
+
+        return $this->configModel->get('sendgrid_api_user');
     }
 }

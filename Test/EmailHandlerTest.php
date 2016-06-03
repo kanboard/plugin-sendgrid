@@ -3,11 +3,10 @@
 require_once 'tests/units/Base.php';
 
 use Kanboard\Plugin\Sendgrid\EmailHandler;
-use Kanboard\Model\TaskCreation;
-use Kanboard\Model\TaskFinder;
-use Kanboard\Model\Project;
-use Kanboard\Model\ProjectUserRole;
-use Kanboard\Model\User;
+use Kanboard\Model\TaskFinderModel;
+use Kanboard\Model\ProjectModel;
+use Kanboard\Model\ProjectUserRoleModel;
+use Kanboard\Model\UserModel;
 use Kanboard\Core\Security\Role;
 
 class SendgridTest extends Base
@@ -30,11 +29,10 @@ class SendgridTest extends Base
     public function testHandlePayload()
     {
         $w = new EmailHandler($this->container);
-        $p = new Project($this->container);
-        $pp = new ProjectUserRole($this->container);
-        $u = new User($this->container);
-        $tc = new TaskCreation($this->container);
-        $tf = new TaskFinder($this->container);
+        $p = new ProjectModel($this->container);
+        $pp = new ProjectUserRoleModel($this->container);
+        $u = new UserModel($this->container);
+        $tf = new TaskFinderModel($this->container);
 
         $this->assertEquals(2, $u->create(array('username' => 'me', 'email' => 'me@localhost')));
 

@@ -2,6 +2,7 @@
 
 namespace Kanboard\Plugin\Sendgrid;
 
+use Kanboard\Core\Security\Role;
 use Kanboard\Core\Translator;
 use Kanboard\Core\Plugin\Base;
 
@@ -17,12 +18,13 @@ class Plugin extends Base
     {
         $this->emailClient->setTransport('sendgrid', '\Kanboard\Plugin\Sendgrid\EmailHandler');
         $this->template->hook->attach('template:config:integrations', 'sendgrid:integration');
-        $this->route->addRoute('/sendgrid/handler/:token', 'webhook', 'receiver', 'sendgrid');
+        $this->route->addRoute('/sendgrid/handler/:token', 'WebhookController', 'receiver', 'sendgrid');
+        $this->applicationAccessMap->add('WebhookController', 'receiver', Role::APP_PUBLIC);
     }
 
     public function onStartup()
     {
-        Translator::load($this->language->getCurrentLanguage(), __DIR__.'/Locale');
+        Translator::load($this->languageModel->getCurrentLanguage(), __DIR__.'/Locale');
     }
 
     public function getPluginDescription()
@@ -37,7 +39,7 @@ class Plugin extends Base
 
     public function getPluginVersion()
     {
-        return '1.0.3';
+        return '1.0.4';
     }
 
     public function getPluginHomepage()

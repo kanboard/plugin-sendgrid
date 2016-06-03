@@ -2,7 +2,7 @@
 
 namespace Kanboard\Plugin\Sendgrid\Controller;
 
-use Kanboard\Controller\Base;
+use Kanboard\Controller\BaseController;
 use Kanboard\Plugin\Sendgrid\EmailHandler;
 
 /**
@@ -11,7 +11,7 @@ use Kanboard\Plugin\Sendgrid\EmailHandler;
  * @package  sendgrid
  * @author   Frederic Guillot
  */
-class Webhook extends Base
+class WebhookController extends BaseController
 {
     /**
      * Handle Sendgrid webhooks
@@ -21,8 +21,7 @@ class Webhook extends Base
     public function receiver()
     {
         $this->checkWebhookToken();
-
         $handler = new EmailHandler($this->container);
-        echo $handler->receiveEmail($_POST) ? 'PARSED' : 'IGNORED';
+        $this->response->text($handler->receiveEmail($_POST) ? 'PARSED' : 'IGNORED');
     }
 }
