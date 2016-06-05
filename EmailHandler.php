@@ -39,7 +39,7 @@ class EmailHandler extends Base implements ClientInterface
             'subject' => $subject,
         );
 
-        $this->httpClient->postForm('https://api.sendgrid.com/api/mail.send.json', $payload);
+        $this->httpClient->postFormAsync('https://api.sendgrid.com/api/mail.send.json', $payload);
     }
 
     /**
