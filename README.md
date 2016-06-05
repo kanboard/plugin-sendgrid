@@ -34,6 +34,12 @@ Note: Plugin folder is case-sensitive.
 Use Sendgrid to send emails
 ---------------------------
 
+### Configuration with the user interface
+
+Set your API credentials on the settings page and set the mail transport to "sendgrid".
+
+### Configuration with the config file
+
 Define those constants in your `config.php` file to send notifications with Sendgrid:
 
 ```php
