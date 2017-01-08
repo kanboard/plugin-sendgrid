@@ -1,5 +1,5 @@
 <h3><img src="<?= $this->url->dir() ?>plugins/Sendgrid/sendgrid-icon.png"/>&nbsp;Sendgrid</h3>
-<div class="listing">
+<div class="panel">
     <input type="text" class="auto-select" readonly="readonly" value="<?= $this->url->href('WebhookController', 'receiver', array('plugin' => 'sendgrid', 'token' => $values['webhook_token']), false, '', true) ?>">
 
     <?= $this->form->label(t('Sendgrid API user'), 'sendgrid_api_user') ?>
