@@ -17,7 +17,7 @@ Author
 Requirements
 ------------
 
-- Kanboard >= 1.0.37
+- Kanboard >= 1.0.39
 - Sendgrid API credentials
 
 Installation
