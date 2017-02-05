@@ -84,3 +84,4 @@ Changes
 
 - Use project email address instead of project identifier
 - Create task in first active swimlane
+- Add email body as task attachment

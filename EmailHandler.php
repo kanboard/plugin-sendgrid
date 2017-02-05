@@ -17,6 +17,36 @@ use League\HTMLToMarkdown\HtmlConverter;
 class EmailHandler extends Base implements ClientInterface
 {
     /**
+     * Get API token
+     *
+     * @access public
+     * @return string
+     */
+    public function getApiKey()
+    {
+        if (defined('SENDGRID_API_KEY')) {
+            return SENDGRID_API_KEY;
+        }
+
+        return $this->configModel->get('sendgrid_api_key');
+    }
+
+    /**
+     * Get API user
+     *
+     * @access public
+     * @return string
+     */
+    public function getApiUser()
+    {
+        if (defined('SENDGRID_API_USER')) {
+            return SENDGRID_API_USER;
+        }
+
+        return $this->configModel->get('sendgrid_api_user');
+    }
+
+    /**
      * Send a HTML email
      *
      * @access public
@@ -81,13 +111,21 @@ class EmailHandler extends Base implements ClientInterface
         }
 
         // Finally, we create the task
-        return (bool)$this->taskCreationModel->create(array(
+        $taskId = $this->taskCreationModel->create(array(
             'project_id'  => $project['id'],
             'title'       => $this->helper->mail->filterSubject($payload['subject']),
             'description' => $this->getTaskDescription($payload),
             'creator_id'  => $user['id'],
             'swimlane_id' => $this->getSwimlaneId($project),
         ));
+
+        if ($taskId > 0) {
+            $this->addEmailBodyAsAttachment($taskId, $payload);
+            //$this->uploadAttachments($taskId, $payload);
+            return true;
+        }
+
+        return false;
     }
 
     protected function getSwimlaneId(array $project)
@@ -117,33 +155,20 @@ class EmailHandler extends Base implements ClientInterface
         return $description;
     }
 
-    /**
-     * Get API token
-     *
-     * @access public
-     * @return string
-     */
-    public function getApiKey()
+    private function addEmailBodyAsAttachment($taskId, array $payload)
     {
-        if (defined('SENDGRID_API_KEY')) {
-            return SENDGRID_API_KEY;
+        $filename = t('Email') . '.txt';
+        $data = '';
+
+        if (! empty($payload['html'])) {
+            $data = $payload['html'];
+            $filename = t('Email') . '.html';
+        } elseif (! empty($payload['text'])) {
+            $data = $payload['text'];
         }
 
-        return $this->configModel->get('sendgrid_api_key');
-    }
-
-    /**
-     * Get API user
-     *
-     * @access public
-     * @return string
-     */
-    public function getApiUser()
-    {
-        if (defined('SENDGRID_API_USER')) {
-            return SENDGRID_API_USER;
+        if (! empty($data)) {
+            $this->taskFileModel->uploadContent($taskId, $filename, $data, false);
         }
-
-        return $this->configModel->get('sendgrid_api_user');
     }
 }
