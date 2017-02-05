@@ -17,6 +17,8 @@ use League\HTMLToMarkdown\HtmlConverter;
  */
 class EmailHandler extends Base implements ClientInterface
 {
+    const API_URL = 'https://api.sendgrid.com/v3/mail/send';
+
     /**
      * Get API token
      *
@@ -26,25 +28,12 @@ class EmailHandler extends Base implements ClientInterface
     public function getApiKey()
     {
         if (defined('SENDGRID_API_KEY')) {
-            return SENDGRID_API_KEY;
+            $key = SENDGRID_API_KEY;
+        } else {
+            $key = $this->configModel->get('sendgrid_api_key');
         }
 
-        return $this->configModel->get('sendgrid_api_key');
-    }
-
-    /**
-     * Get API user
-     *
-     * @access public
-     * @return string
-     */
-    public function getApiUser()
-    {
-        if (defined('SENDGRID_API_USER')) {
-            return SENDGRID_API_USER;
-        }
-
-        return $this->configModel->get('sendgrid_api_user');
+        return trim($key);
     }
 
     /**
@@ -59,18 +48,35 @@ class EmailHandler extends Base implements ClientInterface
      */
     public function sendEmail($email, $name, $subject, $html, $author)
     {
-        $payload = array(
-            'api_user' => $this->getApiUser(),
-            'api_key' => $this->getApiKey(),
-            'to' => $email,
-            'toname' => $name,
-            'from' => $this->helper->mail->getMailSenderAddress(),
-            'fromname' => $author,
-            'html' => $html,
-            'subject' => $subject,
+        $headers = array(
+            'Authorization: Bearer '.$this->getApiKey(),
         );
 
-        $this->httpClient->postFormAsync('https://api.sendgrid.com/api/mail.send.json', $payload);
+        $payload = array(
+            'from' => array(
+                'email' => $this->helper->mail->getMailSenderAddress(),
+                'name'  => $author,
+            ),
+            'personalizations' => array(
+                array(
+                    'to' => array(
+                        array(
+                            'email' => $email,
+                            'name'  => $name,
+                        )
+                    ),
+                )
+            ),
+            'subject' => $subject,
+            'content' => array(
+                array(
+                    'type'  => 'text/html',
+                    'value' => $html,
+                )
+            ),
+        );
+
+        $this->httpClient->postJsonAsync(self::API_URL, $payload, $headers);
     }
 
     /**

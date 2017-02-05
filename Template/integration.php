@@ -2,9 +2,6 @@
 <div class="panel">
     <input type="text" class="auto-select" readonly="readonly" value="<?= $this->url->href('WebhookController', 'receiver', array('plugin' => 'sendgrid', 'token' => $values['webhook_token']), false, '', true) ?>">
 
-    <?= $this->form->label(t('Sendgrid API user'), 'sendgrid_api_user') ?>
-    <?= $this->form->text('sendgrid_api_user', $values) ?>
-
     <?= $this->form->label(t('Sendgrid API key'), 'sendgrid_api_key') ?>
     <?= $this->form->password('sendgrid_api_key', $values) ?>
 

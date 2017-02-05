@@ -15,9 +15,9 @@ class SendgridTest extends Base
     {
         $this->container['httpClient']
             ->expects($this->once())
-            ->method('postFormAsync')
+            ->method('postJsonAsync')
             ->with(
-                'https://api.sendgrid.com/api/mail.send.json',
+                EmailHandler::API_URL,
                 $this->anything(),
                 $this->anything()
             );

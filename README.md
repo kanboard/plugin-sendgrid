@@ -34,11 +34,15 @@ Note: Plugin folder is case-sensitive.
 Use Sendgrid to send emails
 ---------------------------
 
+To use this feature, you have to **create a new API key** in Sendgrid web interface which as **full access to Mail Send**.
+
+The API secret key is visible only one time, **do not use the API key ID**.
+
 ### Configuration with the user interface
 
 Set your API credentials on the settings page and set the mail transport to "sendgrid".
 
-### Configuration with the config file
+### Configuration with the config file (alternative method)
 
 Define those constants in your `config.php` file to send notifications with Sendgrid:
 
@@ -46,11 +50,8 @@ Define those constants in your `config.php` file to send notifications with Send
 // We choose "sendgrid" as mail transport
 define('MAIL_TRANSPORT', 'sendgrid');
 
-// Sendgrid username
-define('SENDGRID_API_USER', 'YOUR_SENDGRID_USERNAME');
-
 // Sendgrid password
-define('SENDGRID_API_KEY', 'YOUR_SENDGRID_PASSWORD');
+define('SENDGRID_API_KEY', 'YOUR_SENDGRID_API_KEY');
 ```
 
 Use Sendgrid to create tasks from emails
@@ -75,6 +76,8 @@ The Kanboard webhook URL is displayed in **Settings > Integrations > Sendgrid**
 Troubleshooting
 ---------------
 
+- Do not use the API Key ID but the API secret key which is visible only after the API key creation
+- Make sure your API key has the permission to send emails (full access on "Mail Send")
 - Enable debug mode and check logs
 
 Changes
@@ -86,3 +89,4 @@ Changes
 - Create task in first active swimlane
 - Add email body as task attachment
 - Add support for attachments
+- Use Sendgrid APIv3 to send emails
