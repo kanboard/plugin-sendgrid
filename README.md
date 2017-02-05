@@ -6,7 +6,7 @@ Sendgrid plugin for Kanboard
 Use [Sendgrid](https://sendgrid.com/) to create tasks directly by email or to send notifications.
 
 - Send emails through Sendgrid API
-- Create tasks from incoming emails
+- Create tasks and attachments from incoming emails
 
 Author
 ------
@@ -69,8 +69,8 @@ The Kanboard webhook URL is displayed in **Settings > Integrations > Sendgrid**
 ### Kanboard configuration
 
 1. The sender must have the same email address in Kanboard and must be member of the project
-2. Assign a project email address in **Project settings > Edit**
-3. Try to send an email to your project
+2. Assign a project email address in **Project Edit**
+3. Send an email to your project
 
 Troubleshooting
 ---------------
@@ -85,3 +85,4 @@ Changes
 - Use project email address instead of project identifier
 - Create task in first active swimlane
 - Add email body as task attachment
+- Add support for attachments

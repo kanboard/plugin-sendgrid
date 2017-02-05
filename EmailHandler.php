@@ -4,6 +4,7 @@ namespace Kanboard\Plugin\Sendgrid;
 
 require_once __DIR__.'/vendor/autoload.php';
 
+use Exception;
 use Kanboard\Core\Base;
 use Kanboard\Core\Mail\ClientInterface;
 use League\HTMLToMarkdown\HtmlConverter;
@@ -121,7 +122,7 @@ class EmailHandler extends Base implements ClientInterface
 
         if ($taskId > 0) {
             $this->addEmailBodyAsAttachment($taskId, $payload);
-            //$this->uploadAttachments($taskId, $payload);
+            $this->uploadAttachments($taskId, $payload);
             return true;
         }
 
@@ -134,28 +135,23 @@ class EmailHandler extends Base implements ClientInterface
         return empty($swimlane) ? 0 : $swimlane['id'];
     }
 
-    /**
-     * Get task description
-     *
-     * @access public
-     * @param  array $payload
-     * @return string
-     */
     protected function getTaskDescription(array $payload)
     {
-        $description = '';
+        if (! empty($payload['html'])) {
+            $htmlConverter = new HtmlConverter(array(
+                'strip_tags'   => true,
+                'remove_nodes' => 'meta script style link img span',
+            ));
 
-        if (!empty($payload['html'])) {
-            $htmlConverter = new HtmlConverter(array('strip_tags' => true));
-            $description = $htmlConverter->convert($payload['html']);
-        } elseif (!empty($payload['text'])) {
-            $description = $payload['text'];
+            return $htmlConverter->convert($payload['html']);
+        } elseif (! empty($payload['text'])) {
+            return $payload['text'];
         }
 
-        return $description;
+        return '';
     }
 
-    private function addEmailBodyAsAttachment($taskId, array $payload)
+    protected function addEmailBodyAsAttachment($taskId, array $payload)
     {
         $filename = t('Email') . '.txt';
         $data = '';
@@ -169,6 +165,28 @@ class EmailHandler extends Base implements ClientInterface
 
         if (! empty($data)) {
             $this->taskFileModel->uploadContent($taskId, $filename, $data, false);
+        }
+    }
+
+    protected function uploadAttachments($taskId, array $payload)
+    {
+        if (isset($payload['attachments']) && $payload['attachments'] > 0) {
+            for ($i = 1; $i <= $payload['attachments']; $i++) {
+                $this->uploadAttachment($taskId, 'attachment' . $i);
+            }
+        }
+    }
+
+    protected function uploadAttachment($taskId, $name)
+    {
+        $fileInfo = $this->request->getFileInfo($name);
+
+        if (! empty($fileInfo)) {
+            try {
+                $this->taskFileModel->uploadFile($taskId, $fileInfo);
+            } catch (Exception $e) {
+                $this->logger->error($e->getMessage());
+            }
         }
     }
 }
