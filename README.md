@@ -62,19 +62,25 @@ Kanboard use a webhook to handle incoming emails.
 ### Sendgrid configuration
 
 1. Create a new domain or subdomain (by example **inbound.mydomain.tld**) with a MX record that point to **mx.sendgrid.net**
-2. Add your domain and the Kanboard webhook url to [the configuration page in Sendgrid](https://sendgrid.com/developer/reply)
+2. Add your domain and the Kanboard webhook url to [the configuration page in Sendgrid](https://app.sendgrid.com/settings/parse)
 
-The Kanboard webhook url is displayed in **Settings > Integrations > Sendgrid**
+The Kanboard webhook URL is displayed in **Settings > Integrations > Sendgrid**
 
 ### Kanboard configuration
 
-1. Be sure that your users have an email address in their profiles
-2. Assign a project identifier to the desired projects: **Project settings > Edit**
-3. Try to send an email to your project: something+myproject@mydomain.tld
-
-The sender must have the same email address in Kanboard and must be member of the project.
+1. The sender must have the same email address in Kanboard and must be member of the project
+2. Assign a project email address in **Project settings > Edit**
+3. Try to send an email to your project
 
 Troubleshooting
 ---------------
 
 - Enable debug mode and check logs
+
+Changes
+-------
+
+### Version 1.0.6
+
+- Use project email address instead of project identifier
+- Create task in first active swimlane

@@ -56,37 +56,44 @@ class EmailHandler extends Base implements ClientInterface
         }
 
         $envelope = json_decode($payload['envelope'], true);
-        $sender = isset($envelope['to'][0]) ? $envelope['to'][0] : '';
+        $recipient = isset($envelope['to'][0]) ? $envelope['to'][0] : '';
 
         // The user must exists in Kanboard
         $user = $this->userModel->getByEmail($envelope['from']);
 
         if (empty($user)) {
-            $this->logger->debug('SendgridWebhook: ignored => user not found');
+            $this->logger->debug(__METHOD__.': Ignored => user not found: '.$envelope['from']);
             return false;
         }
 
         // The project must have a short name
-        $project = $this->projectModel->getByIdentifier($this->helper->mail->getMailboxHash($sender));
+        $project = $this->projectModel->getByEmail($recipient);
 
         if (empty($project)) {
-            $this->logger->debug('SendgridWebhook: ignored => project not found');
+            $this->logger->debug(__METHOD__.': Ignored => project not found: '.$recipient);
             return false;
         }
 
         // The user must be member of the project
-        if (! $this->projectPermissionModel->isMember($project['id'], $user['id'])) {
-            $this->logger->debug('SendgridWebhook: ignored => user is not member of the project');
+        if (! $this->projectPermissionModel->isAssignable($project['id'], $user['id'])) {
+            $this->logger->debug(__METHOD__.': Ignored => user is not member of the project');
             return false;
         }
 
         // Finally, we create the task
-        return (bool) $this->taskCreationModel->create(array(
-            'project_id' => $project['id'],
-            'title' => $this->helper->mail->filterSubject($payload['subject']),
+        return (bool)$this->taskCreationModel->create(array(
+            'project_id'  => $project['id'],
+            'title'       => $this->helper->mail->filterSubject($payload['subject']),
             'description' => $this->getTaskDescription($payload),
-            'creator_id' => $user['id'],
+            'creator_id'  => $user['id'],
+            'swimlane_id' => $this->getSwimlaneId($project),
         ));
+    }
+
+    protected function getSwimlaneId(array $project)
+    {
+        $swimlane = $this->swimlaneModel->getFirstActiveSwimlane($project['id']);
+        return empty($swimlane) ? 0 : $swimlane['id'];
     }
 
     /**
