@@ -36,11 +36,17 @@ Use Sendgrid to send emails
 
 To use this feature, you have to **create a new API key** in Sendgrid web interface which as **full access to Mail Send**.
 
-The API secret key is visible only one time, **do not use the API key ID**.
+The API key must have the permission to send Emails:
+
+![Permissions](https://cloud.githubusercontent.com/assets/323546/22630453/5676af00-ebc8-11e6-949a-8de4ca4ee83e.png)
+
+The API secret key is visible only one time, **do not use the API key ID**:
+
+![API key](https://cloud.githubusercontent.com/assets/323546/22630480/cfabac9a-ebc8-11e6-9328-5c18d34a2d50.png)
 
 ### Configuration with the user interface
 
-Set your API credentials on the settings page and set the mail transport to "sendgrid".
+Set your API credentials on the settings page (**Application Settings > Integrations > Sendgrid**) and set the mail transport to "sendgrid" (**Application Settings > Email Settings**).
 
 ### Configuration with the config file (alternative method)
 
