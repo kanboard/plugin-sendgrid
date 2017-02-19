@@ -40,13 +40,14 @@ class EmailHandler extends Base implements ClientInterface
      * Send a HTML email
      *
      * @access public
-     * @param  string  $email
-     * @param  string  $name
-     * @param  string  $subject
-     * @param  string  $html
-     * @param  string  $author
+     * @param  string $recipientEmail
+     * @param  string $recipientName
+     * @param  string $subject
+     * @param  string $html
+     * @param  string $authorName
+     * @param  string $authorEmail
      */
-    public function sendEmail($email, $name, $subject, $html, $author)
+    public function sendEmail($recipientEmail, $recipientName, $subject, $html, $authorName, $authorEmail = '')
     {
         $headers = array(
             'Authorization: Bearer '.$this->getApiKey(),
@@ -55,14 +56,14 @@ class EmailHandler extends Base implements ClientInterface
         $payload = array(
             'from' => array(
                 'email' => $this->helper->mail->getMailSenderAddress(),
-                'name'  => $author,
+                'name'  => $authorName,
             ),
             'personalizations' => array(
                 array(
                     'to' => array(
                         array(
-                            'email' => $email,
-                            'name'  => $name,
+                            'email' => $recipientEmail,
+                            'name'  => $recipientName,
                         )
                     ),
                 )
@@ -75,6 +76,12 @@ class EmailHandler extends Base implements ClientInterface
                 )
             ),
         );
+
+        if (! empty($authorEmail)) {
+            $payload['reply_to'] = array(
+                'email' => $authorEmail
+            );
+        }
 
         $this->httpClient->postJsonAsync(self::API_URL, $payload, $headers);
     }

@@ -22,8 +22,23 @@ class SendgridTest extends Base
                 $this->anything()
             );
 
-        $pm = new EmailHandler($this->container);
-        $pm->sendEmail('test@localhost', 'Me', 'Test', 'Content', 'Bob');
+        $emailHandler = new EmailHandler($this->container);
+        $emailHandler->sendEmail('test@localhost', 'Me', 'Test', 'Content', 'Bob');
+    }
+
+    public function testSendEmailWithAuthorEmail()
+    {
+        $this->container['httpClient']
+            ->expects($this->once())
+            ->method('postJsonAsync')
+            ->with(
+                EmailHandler::API_URL,
+                $this->contains(array('email' => 'bob@localhost')),
+                $this->anything()
+            );
+
+        $emailHandler = new EmailHandler($this->container);
+        $emailHandler->sendEmail('test@localhost', 'Me', 'Test', 'Content', 'Bob', 'bob@localhost');
     }
 
     public function testHandlePayload()
