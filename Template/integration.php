@@ -5,7 +5,7 @@
     <?= $this->form->label(t('Sendgrid API key'), 'sendgrid_api_key') ?>
     <?= $this->form->password('sendgrid_api_key', $values) ?>
 
-    <p class="form-help"><a href="https://kanboard.net/plugin/sendgrid" target="_blank"><?= t('Help on Sendgrid integration') ?></a></p>
+    <p class="form-help"><a href="https://github.com/kanboard/plugin-sendgrid/blob/master/README.md" target="_blank"><?= t('Help on Sendgrid integration') ?></a></p>
 
     <div class="form-actions">
         <input type="submit" value="<?= t('Save') ?>" class="btn btn-blue">
