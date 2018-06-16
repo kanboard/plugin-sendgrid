@@ -1,6 +1,6 @@
 <?php
 
 return array(
-    // 'Help on Sendgrid integration' => '',
+    'Help on Sendgrid integration' => 'Súgó a Sendgrid integráláshoz',
 );
 
